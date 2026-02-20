@@ -327,7 +327,26 @@ main { padding-top:56px; min-height:100vh; }
 @keyframes spin { to { transform:rotate(360deg); } }
 .loading-msg { font-size:0.85rem; color:var(--ink-muted); }
 
-/* ── PIN LOCK SCREEN ── */
+/* ── SYNC CODE MODAL ── */
+.sync-modal-overlay { display:none; position:fixed; inset:0; background:rgba(28,24,18,0.5); z-index:3000; align-items:center; justify-content:center; padding:1.5rem; }
+.sync-modal-overlay.open { display:flex; }
+.sync-modal { background:var(--surface); border-radius:20px; padding:2rem; width:100%; max-width:380px; box-shadow:var(--shadow-lg); animation:fadeIn 0.2s ease; text-align:center; }
+.sync-modal-title { font-family:var(--font-display); font-size:1.4rem; font-weight:700; margin-bottom:0.4rem; }
+.sync-modal-sub { font-size:0.83rem; color:var(--ink-muted); margin-bottom:1.5rem; line-height:1.5; }
+.sync-tabs { display:flex; gap:0.4rem; background:var(--bg2); border-radius:10px; padding:0.3rem; margin-bottom:1.5rem; }
+.sync-tab { flex:1; font-family:var(--font-body); font-size:0.78rem; font-weight:600; padding:0.5rem; border-radius:7px; border:none; background:transparent; color:var(--ink-muted); cursor:pointer; transition:all 0.15s; }
+.sync-tab.active { background:var(--surface); color:var(--ink); box-shadow:var(--shadow); }
+.sync-code-display { font-family:var(--font-display); font-size:2.8rem; font-weight:700; letter-spacing:0.2em; color:var(--accent); background:var(--bg2); border-radius:12px; padding:1rem 1.5rem; margin:0.5rem 0 1rem; display:flex; align-items:center; justify-content:center; gap:0.2rem; }
+.sync-code-digit { width:2.2rem; text-align:center; }
+.sync-code-hint { font-size:0.75rem; color:var(--ink-muted); margin-bottom:1.25rem; }
+.sync-code-expiry { font-size:0.72rem; color:var(--ink-muted); margin-top:0.5rem; }
+.sync-code-expiry span { color:var(--accent); font-weight:700; }
+.sync-enter-inputs { display:flex; gap:0.5rem; justify-content:center; margin-bottom:1rem; }
+.sync-digit-input { width:42px; height:52px; font-family:var(--font-display); font-size:1.5rem; font-weight:700; text-align:center; border:2px solid var(--border); border-radius:10px; background:var(--bg2); color:var(--ink); outline:none; transition:border-color 0.15s; }
+.sync-digit-input:focus { border-color:var(--accent); background:white; }
+.sync-success { font-size:2rem; margin-bottom:0.5rem; }
+.sync-success-msg { font-size:0.9rem; font-weight:600; color:#2e7d32; }
+
 .pin-screen {
   position:fixed; inset:0; background:var(--bg); z-index:2000;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -396,6 +415,7 @@ main { padding-top:56px; min-height:100vh; }
     <button class="nav-tab" onclick="showView('review')">📓 Review</button>
   </div>
   <div class="nav-date" id="nav-date"></div>
+  <button class="nav-tab" onclick="openSyncModal()" title="Sync devices" style="font-size:1rem;padding:0.3rem 0.5rem">📲</button>
   <button class="nav-tab" onclick="showPinChange()" title="Change PIN" style="font-size:1rem;padding:0.3rem 0.5rem">🔒</button>
 </nav>
 
@@ -681,6 +701,21 @@ main { padding-top:56px; min-height:100vh; }
   <div class="pin-tagline">Your personal life planner</div>
   <div id="pin-inner"><!-- filled by JS --></div>
   <div class="pin-change-link" id="pin-change-link" onclick="showPinChange()" style="display:none">Change PIN</div>
+</div>
+
+<!-- SYNC CODE MODAL -->
+<div class="sync-modal-overlay" id="syncModal">
+  <div class="sync-modal">
+    <div class="sync-modal-title">📲 Link a Device</div>
+    <div class="sync-modal-sub">Generate a code on this device, then enter it on your other device to sync all your data.</div>
+    <div class="sync-tabs">
+      <button class="sync-tab active" id="sync-tab-gen" onclick="switchSyncTab('gen')">Get Code</button>
+      <button class="sync-tab" id="sync-tab-enter" onclick="switchSyncTab('enter')">Enter Code</button>
+    </div>
+    <div id="sync-tab-gen-body"></div>
+    <div id="sync-tab-enter-body" style="display:none"></div>
+    <button class="btn btn-ghost btn-sm" onclick="closeSyncModal()" style="margin-top:0.5rem;width:100%">Close</button>
+  </div>
 </div>
 
 <div class="loading-screen hidden" id="loading-screen">
@@ -1762,8 +1797,176 @@ function showPinChange() {
 }
 
 // ═══════════════════════════════════════════════════════════
-//  BOOT
+//  SYNC CODE  — link two devices via a 6-digit code
 // ═══════════════════════════════════════════════════════════
+let syncCodeValue = null;
+let syncCodeExpiry = null;
+let syncCodeTimer = null;
+let syncCountdownInterval = null;
+
+function openSyncModal() {
+  document.getElementById('syncModal').classList.add('open');
+  switchSyncTab('gen');
+}
+
+function closeSyncModal() {
+  document.getElementById('syncModal').classList.remove('open');
+  clearInterval(syncCountdownInterval);
+}
+
+function switchSyncTab(tab) {
+  document.getElementById('sync-tab-gen').classList.toggle('active', tab==='gen');
+  document.getElementById('sync-tab-enter').classList.toggle('active', tab==='enter');
+  document.getElementById('sync-tab-gen-body').style.display   = tab==='gen'   ? 'block' : 'none';
+  document.getElementById('sync-tab-enter-body').style.display = tab==='enter' ? 'block' : 'none';
+  if (tab==='gen')   renderGenTab();
+  if (tab==='enter') renderEnterTab();
+}
+
+async function renderGenTab() {
+  const body = document.getElementById('sync-tab-gen-body');
+  body.innerHTML = `<div style="color:var(--ink-muted);font-size:0.85rem;padding:1rem">Generating code…</div>`;
+  clearInterval(syncCountdownInterval);
+
+  // Generate a 6-digit code and store it in Supabase with expiry
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
+  const expiry = new Date(Date.now() + 5 * 60 * 1000).toISOString(); // 5 min
+  syncCodeValue = code;
+  syncCodeExpiry = expiry;
+
+  try {
+    // Store code → user_id mapping in Supabase
+    await sb.from('compass_sync_codes').upsert({
+      code,
+      user_id: USER_ID,
+      expires_at: expiry,
+    }, { onConflict: 'code' });
+
+    let secsLeft = 300;
+    const renderCode = () => {
+      const mins = Math.floor(secsLeft/60);
+      const secs = String(secsLeft%60).padStart(2,'0');
+      body.innerHTML = `
+        <div class="sync-code-display">${code.split('').map(d=>`<div class="sync-code-digit">${d}</div>`).join('')}</div>
+        <div class="sync-code-hint">Enter this code on your other device under<br><strong>📲 Link a Device → Enter Code</strong></div>
+        <div class="sync-code-expiry">Expires in <span>${mins}:${secs}</span></div>
+        <button class="btn btn-outline btn-sm" onclick="renderGenTab()" style="margin-top:0.75rem">🔄 New code</button>`;
+      secsLeft--;
+      if (secsLeft < 0) { clearInterval(syncCountdownInterval); renderGenTab(); }
+    };
+    renderCode();
+    syncCountdownInterval = setInterval(renderCode, 1000);
+
+  } catch(e) {
+    body.innerHTML = `
+      <div style="color:#c0392b;font-size:0.83rem;padding:1rem">
+        Couldn't generate code. Make sure the sync_codes table exists in Supabase.<br><br>
+        <strong>Run this SQL in Supabase:</strong>
+      </div>
+      <pre style="background:var(--bg2);border-radius:8px;padding:0.75rem;font-size:0.72rem;text-align:left;overflow:auto;margin-top:0.5rem">create table if not exists compass_sync_codes (
+  code text primary key,
+  user_id text not null,
+  expires_at timestamptz not null
+);
+alter table compass_sync_codes enable row level security;
+create policy "Allow all sync codes"
+  on compass_sync_codes for all
+  using (true) with check (true);</pre>
+      <button class="btn btn-outline btn-sm" onclick="renderGenTab()" style="margin-top:0.75rem">Try again</button>`;
+  }
+}
+
+function renderEnterTab() {
+  const body = document.getElementById('sync-tab-enter-body');
+  body.innerHTML = `
+    <div style="font-size:0.83rem;color:var(--ink-muted);margin-bottom:1rem">Enter the 6-digit code shown on your other device</div>
+    <div class="sync-enter-inputs" id="sync-digit-row">
+      ${[0,1,2,3,4,5].map(i=>`<input class="sync-digit-input" id="sdi-${i}" type="tel" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="syncDigitInput(${i},this)" onkeydown="syncDigitKey(${i},event)">`).join('')}
+    </div>
+    <button class="btn btn-primary" onclick="submitSyncCode()" style="width:100%;margin-top:0.5rem">Link this device →</button>
+    <div id="sync-enter-msg" style="font-size:0.8rem;margin-top:0.75rem;min-height:1.2rem"></div>`;
+  setTimeout(()=>document.getElementById('sdi-0')?.focus(), 100);
+}
+
+function syncDigitInput(i, el) {
+  const val = el.value.replace(/\D/g,'');
+  el.value = val.slice(-1);
+  if (val && i < 5) document.getElementById('sdi-'+(i+1))?.focus();
+  // Auto-submit when all 6 filled
+  const code = [0,1,2,3,4,5].map(n=>document.getElementById('sdi-'+n)?.value||'').join('');
+  if (code.length===6) setTimeout(submitSyncCode, 200);
+}
+
+function syncDigitKey(i, e) {
+  if (e.key==='Backspace' && !e.target.value && i>0) document.getElementById('sdi-'+(i-1))?.focus();
+}
+
+async function submitSyncCode() {
+  const code = [0,1,2,3,4,5].map(n=>document.getElementById('sdi-'+n)?.value||'').join('');
+  const msgEl = document.getElementById('sync-enter-msg');
+  if (code.length < 6) { if(msgEl) msgEl.innerHTML='<span style="color:#c0392b">Please enter all 6 digits</span>'; return; }
+  if (msgEl) msgEl.innerHTML = '<span style="color:var(--ink-muted)">Checking code…</span>';
+
+  try {
+    const { data, error } = await sb.from('compass_sync_codes')
+      .select('user_id, expires_at')
+      .eq('code', code)
+      .single();
+
+    if (error || !data) {
+      if(msgEl) msgEl.innerHTML='<span style="color:#c0392b">Code not found. Check the digits and try again.</span>';
+      return;
+    }
+    if (new Date(data.expires_at) < new Date()) {
+      if(msgEl) msgEl.innerHTML='<span style="color:#c0392b">Code has expired. Generate a new one on your other device.</span>';
+      return;
+    }
+    if (data.user_id === USER_ID) {
+      if(msgEl) msgEl.innerHTML='<span style="color:#b07d1a">This is already the same device!</span>';
+      return;
+    }
+
+    // ✅ Valid! Switch this device to use the other device's user_id
+    const oldId = USER_ID;
+    localStorage.setItem('compass_user_id', data.user_id);
+
+    // Load the data from the linked account
+    if(msgEl) msgEl.innerHTML='<span style="color:var(--ink-muted)">Syncing data…</span>';
+    const { data: cloudData } = await sb.from('compass_data')
+      .select('data').eq('user_id', data.user_id).single();
+
+    if (cloudData?.data) {
+      state = { ...DEFAULT_STATE, ...cloudData.data };
+      localStorage.setItem('compass_v4', JSON.stringify(state));
+    }
+
+    // Clean up old row if it exists
+    await sb.from('compass_data').delete().eq('user_id', oldId);
+    // Delete used code
+    await sb.from('compass_sync_codes').delete().eq('code', code);
+
+    // Show success
+    const body = document.getElementById('sync-tab-enter-body');
+    body.innerHTML = `
+      <div class="sync-success">🎉</div>
+      <div class="sync-success-msg">Devices linked successfully!</div>
+      <div style="font-size:0.8rem;color:var(--ink-muted);margin-top:0.5rem">Your data is now syncing across both devices.</div>`;
+
+    // Re-render everything with synced data
+    setTimeout(() => {
+      closeSyncModal();
+      renderGoals(); renderTasks(); checkBadges();
+      showToast('Devices linked! Everything is now in sync 🔗');
+      subscribeToRealtime();
+    }, 2000);
+
+  } catch(e) {
+    console.error(e);
+    if(msgEl) msgEl.innerHTML='<span style="color:#c0392b">Something went wrong. Please try again.</span>';
+  }
+}
+
+
 async function bootApp() {
   updateNavDate();
   setInterval(updateNavDate, 60000);
