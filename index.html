@@ -22,6 +22,7 @@
   --finances: #2a7a4b;    --finances-light: #d8f0e3;
   --health: #b5363e;      --health-light: #fde8e9;
   --relationships: #8b4fa8; --relationships-light: #f0e4f7;
+  --admin: #6b7280;        --admin-light: #f3f4f6;
   --accent: #e85d3a;
   --gold: #c9a84c;
   --font-display: 'Playfair Display', Georgia, serif;
@@ -34,14 +35,15 @@ body { background:var(--bg); color:var(--ink); font-family:var(--font-body); min
 body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E"); pointer-events:none; z-index:500; }
 
 /* NAV */
-.nav { position:fixed; top:0; left:0; right:0; background:var(--surface); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 1.2rem; height:56px; z-index:100; box-shadow:var(--shadow); gap:0.5rem; }
-.nav-brand { font-family:var(--font-display); font-size:1.25rem; font-weight:700; color:var(--ink); letter-spacing:-0.01em; margin-right:auto; white-space:nowrap; }
+.nav { position:fixed; top:0; left:0; right:0; background:var(--surface); border-bottom:1px solid var(--border); display:flex; align-items:center; padding:0 0.75rem; height:56px; z-index:100; box-shadow:var(--shadow); gap:0.25rem; overflow-x:auto; overflow-y:hidden; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+.nav::-webkit-scrollbar { display:none; }
+.nav-brand { font-family:var(--font-display); font-size:1.15rem; font-weight:700; color:var(--ink); letter-spacing:-0.01em; flex-shrink:0; white-space:nowrap; margin-right:0.25rem; }
 .nav-brand span { color:var(--accent); }
-.nav-tabs { display:flex; gap:0.2rem; }
-.nav-tab { font-family:var(--font-body); font-size:0.72rem; font-weight:500; letter-spacing:0.04em; text-transform:uppercase; background:none; border:none; color:var(--ink-muted); padding:0.4rem 0.65rem; border-radius:6px; cursor:pointer; transition:all 0.15s; white-space:nowrap; }
+.nav-tabs { display:flex; gap:0.15rem; flex-shrink:0; }
+.nav-tab { font-family:var(--font-body); font-size:0.7rem; font-weight:500; letter-spacing:0.03em; text-transform:uppercase; background:none; border:none; color:var(--ink-muted); padding:0.4rem 0.55rem; border-radius:6px; cursor:pointer; transition:all 0.15s; white-space:nowrap; flex-shrink:0; }
 .nav-tab:hover { background:var(--bg); color:var(--ink); }
 .nav-tab.active { background:var(--ink); color:var(--bg); }
-.nav-date { font-size:0.72rem; color:var(--ink-muted); white-space:nowrap; border-left:1px solid var(--border); padding-left:0.75rem; margin-left:0.25rem; }
+.nav-date { font-size:0.7rem; color:var(--ink-muted); white-space:nowrap; border-left:1px solid var(--border); padding-left:0.6rem; margin-left:0.1rem; flex-shrink:0; }
 
 /* LAYOUT */
 main { padding-top:56px; min-height:100vh; }
@@ -91,6 +93,7 @@ main { padding-top:56px; min-height:100vh; }
 .domain-pill.finances    { background:var(--finances-light);      color:var(--finances); }
 .domain-pill.health      { background:var(--health-light);        color:var(--health); }
 .domain-pill.relationships{ background:var(--relationships-light);color:var(--relationships); }
+.domain-pill.admin       { background:var(--admin-light);          color:var(--admin); }
 
 .domain-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
 .domain-dot.home         { background:var(--home); }
@@ -99,6 +102,7 @@ main { padding-top:56px; min-height:100vh; }
 .domain-dot.finances     { background:var(--finances); }
 .domain-dot.health       { background:var(--health); }
 .domain-dot.relationships{ background:var(--relationships); }
+.domain-dot.admin        { background:var(--admin); }
 
 /* GOAL CARDS */
 .goal-card { background:var(--surface); border:1.5px solid var(--border); border-radius:12px; padding:1.1rem 1.2rem; margin-bottom:0.75rem; position:relative; transition:box-shadow 0.15s; }
@@ -115,6 +119,7 @@ main { padding-top:56px; min-height:100vh; }
 .finances .goal-progress-fill    { background:var(--finances); }
 .health .goal-progress-fill      { background:var(--health); }
 .relationships .goal-progress-fill{ background:var(--relationships); }
+.admin .goal-progress-fill        { background:var(--admin); }
 .goal-dates { font-size:0.72rem; color:var(--ink-muted); display:flex; gap:0.75rem; margin-top:0.4rem; flex-wrap:wrap; }
 .goal-date-chip { display:inline-flex; align-items:center; gap:0.25rem; }
 .goal-time-remaining { font-size:0.72rem; font-weight:600; padding:0.18rem 0.5rem; border-radius:4px; }
@@ -136,6 +141,7 @@ main { padding-top:56px; min-height:100vh; }
 .task-card.finances::before     { background:var(--finances); }
 .task-card.health::before       { background:var(--health); }
 .task-card.relationships::before{ background:var(--relationships); }
+.task-card.admin::before        { background:var(--admin); }
 .task-card:hover { box-shadow:var(--shadow); transform:translateX(2px); }
 .task-card.done { opacity:0.5; }
 .task-card.done .task-card-name { text-decoration:line-through; }
@@ -152,6 +158,21 @@ main { padding-top:56px; min-height:100vh; }
 .task-card-actions { display:flex; gap:0.3rem; opacity:0; transition:opacity 0.15s; align-items:flex-start; }
 .task-card:hover .task-card-actions { opacity:1; }
 .time-badge { font-size:0.65rem; font-weight:600; background:var(--bg2); color:var(--ink-muted); padding:0.15rem 0.4rem; border-radius:4px; display:inline-flex; align-items:center; gap:0.2rem; }
+.task-rollover-badge { font-size:0.62rem; font-weight:700; background:#fef8e7; color:#b07d1a; padding:0.15rem 0.4rem; border-radius:4px; border:1px solid #f0d080; }
+.task-auto-badge { font-size:0.62rem; font-weight:700; background:#e8eaf6; color:#5c5e9e; padding:0.15rem 0.4rem; border-radius:4px; border:1px solid #c5cae9; cursor:pointer; }
+.task-auto-badge:hover { background:#c5cae9; }
+
+/* GOAL COACHING PANEL */
+.coaching-panel { background:linear-gradient(135deg,#1c1812,#2d2418); border-radius:14px; padding:1.4rem 1.5rem; margin-bottom:1.5rem; color:var(--bg); }
+.coaching-panel-title { font-family:var(--font-display); font-size:1rem; font-weight:700; color:var(--gold); margin-bottom:0.25rem; display:flex; align-items:center; gap:0.4rem; }
+.coaching-panel-sub { font-size:0.78rem; opacity:0.6; margin-bottom:1rem; }
+.coaching-insight { display:flex; gap:0.75rem; padding:0.65rem 0; border-bottom:1px solid rgba(255,255,255,0.08); align-items:flex-start; }
+.coaching-insight:last-child { border-bottom:none; padding-bottom:0; }
+.coaching-insight-icon { font-size:1.1rem; flex-shrink:0; margin-top:0.1rem; }
+.coaching-insight-text { font-size:0.82rem; line-height:1.5; flex:1; }
+.coaching-insight-text strong { color:var(--gold); }
+.coaching-insight-text em { color:var(--accent); font-style:normal; font-weight:600; }
+.coaching-no-tasks { font-size:0.83rem; opacity:0.55; text-align:center; padding:1rem 0; }
 
 /* STATS */
 .stats-row { display:flex; gap:0.75rem; margin-bottom:2rem; flex-wrap:wrap; }
@@ -163,6 +184,7 @@ main { padding-top:56px; min-height:100vh; }
 .stat-num.finances-c     { color:var(--finances); }
 .stat-num.health-c       { color:var(--health); }
 .stat-num.relationships-c{ color:var(--relationships); }
+.stat-num.admin-c        { color:var(--admin); }
 .stat-lbl { font-size:0.65rem; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink-muted); margin-top:0.25rem; }
 
 /* QUIZ */
@@ -395,7 +417,7 @@ main { padding-top:56px; min-height:100vh; }
   80%{transform:translateX(4px)}
 }
 
-  .nav-tab { padding:0.4rem 0.45rem; font-size:0.65rem; }
+@media (max-width:560px) {
   .nav-date { display:none; }
   .quiz-vs { flex-direction:column; }
   .quiz-vs-label { display:none; }
@@ -522,18 +544,20 @@ main { padding-top:56px; min-height:100vh; }
   <div class="stats-row" id="task-stats"></div>
 
   <div class="form-row" style="margin-bottom:0.5rem">
-    <input class="input" id="newTaskInput" placeholder="Add a task for today…" onkeydown="if(event.key==='Enter') addTask()">
+    <input class="input" id="newTaskInput" placeholder="Describe your task — we'll auto-assign it…" onkeydown="if(event.key==='Enter') addTask()">
+  </div>
+  <div class="form-row" style="margin-bottom:1.5rem;align-items:center;flex-wrap:wrap;gap:0.5rem">
     <select class="select" id="newTaskDomain" style="width:auto;min-width:130px">
+      <option value="auto" selected>🤖 Auto-detect</option>
       <option value="home">🏠 Home</option>
       <option value="career">💼 Career</option>
       <option value="projects">🚀 Projects</option>
       <option value="finances">💰 Finances</option>
       <option value="health">❤️ Health</option>
       <option value="relationships">🤝 Relationships</option>
+      <option value="admin">📋 Admin</option>
     </select>
-  </div>
-  <div class="form-row" style="margin-bottom:1.5rem;align-items:center">
-    <div style="display:flex;align-items:center;gap:0.5rem;flex:1">
+    <div style="display:flex;align-items:center;gap:0.5rem;flex:1;min-width:160px">
       <span style="font-size:0.78rem;color:var(--ink-muted);white-space:nowrap">⏱ Est.:</span>
       <select class="select" id="newTaskTime" style="width:auto">
         <option value="15">15 min</option>
@@ -572,12 +596,17 @@ main { padding-top:56px; min-height:100vh; }
     <div class="domain-title"><div class="domain-dot relationships"></div>Relationships</div>
     <div id="tasks-relationships"></div>
   </div>
+  <div class="domain-section">
+    <div class="domain-title"><div class="domain-dot admin"></div>📋 Admin &amp; Unassigned</div>
+    <div id="tasks-admin"></div>
+  </div>
 </div>
 
 <!-- ===================== PRIORITISE ===================== -->
 <div class="view" id="view-prioritise">
   <h1 class="page-title">⚡ <em>Focus</em> Mode</h1>
-  <p class="page-sub">Pick what to tackle first — guided by your goals and available time.</p>
+  <p class="page-sub">Smart suggestions based on your goals and deadlines, then pick what to tackle first.</p>
+  <div id="coaching-panel-area"></div>
   <div id="quiz-area"></div>
 </div>
 
@@ -665,6 +694,7 @@ main { padding-top:56px; min-height:100vh; }
         <option value="finances">💰 Finances</option>
         <option value="health">❤️ Health</option>
         <option value="relationships">🤝 Relationships</option>
+        <option value="admin">📋 Admin</option>
       </select>
     </div>
     <div class="form-group">
@@ -732,8 +762,8 @@ main { padding-top:56px; min-height:100vh; }
 // ═══════════════════════════════════════════════════════════
 //  STATE
 // ═══════════════════════════════════════════════════════════
-const DOMAINS = ['home','career','projects','finances','health','relationships'];
-const DOMAIN_EMOJI = { home:'🏠', career:'💼', projects:'🚀', finances:'💰', health:'❤️', relationships:'🤝' };
+const DOMAINS = ['home','career','projects','finances','health','relationships','admin'];
+const DOMAIN_EMOJI = { home:'🏠', career:'💼', projects:'🚀', finances:'💰', health:'❤️', relationships:'🤝', admin:'📋' };
 
 // ─── Supabase config ───────────────────────────────────────
 const SUPABASE_URL = 'https://srmcpulfnnnpcmrtuvkc.supabase.co';
@@ -840,6 +870,22 @@ function subscribeToRealtime() {
 }
 function uid()  { return Date.now()+'-'+Math.random().toString(36).slice(2,7); }
 function todayStr() { return new Date().toISOString().slice(0,10); }
+
+// Roll over any undone tasks from previous days to today
+function rolloverTasks() {
+  const today = todayStr();
+  let changed = false;
+  state.tasks.forEach(t => {
+    if (!t.done && t.date < today) {
+      t.rolledFrom = t.rolledFrom || t.date; // remember original date
+      t.date = today;
+      changed = true;
+    }
+  });
+  if (changed) save();
+}
+
+// Today's tasks = tasks dated today (after rollover)
 function todayTasks() { return state.tasks.filter(t => t.date === todayStr()); }
 function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function domainEmoji(d) { return DOMAIN_EMOJI[d]||''; }
@@ -1243,15 +1289,97 @@ function renderGoals() {
 // ═══════════════════════════════════════════════════════════
 //  TASKS
 // ═══════════════════════════════════════════════════════════
+// ─── Smart domain classifier ────────────────────────────────
+const DOMAIN_KEYWORDS = {
+  home: [
+    'clean','cleaning','tidy','tidying','cook','cooking','grocery','groceries','shopping','supermarket',
+    'laundry','wash','dishes','vacuum','hoover','mop','garden','gardening','plant','plants','home',
+    'house','flat','apartment','repairs','fix','plumber','electrician','furniture','moving','move',
+    'decoration','decor','paint','renovate','renovation','landlord','rent','mortgage','bins','recycling',
+    'ikea','curtains','bathroom','kitchen','bedroom','living room','hallway'
+  ],
+  career: [
+    'work','job','meeting','email','emails','presentation','report','boss','colleague','colleagues',
+    'interview','apply','application','cv','resume','linkedin','promotion','salary','raise','deadline',
+    'project','client','clients','office','remote','wfh','slack','zoom','teams','conference','workshop',
+    'training','course','certificate','certification','skill','skills','professional','career','network',
+    'networking','proposal','pitch','budget','kpi','performance','review','appraisal','hire','hiring'
+  ],
+  projects: [
+    'build','create','develop','code','program','design','prototype','launch','release','publish',
+    'website','app','startup','side project','blog','write','writing','book','podcast','video',
+    'youtube','record','edit','film','photo','photography','art','draw','drawing','paint','craft',
+    'research','experiment','test','deploy','github','figma','portfolio'
+  ],
+  finances: [
+    'pay','payment','bill','bills','invoice','bank','banking','transfer','budget','budgeting',
+    'savings','save','invest','investment','pension','tax','taxes','accountant','insurance',
+    'mortgage','loan','debt','credit card','statement','expenses','receipt','money','financial',
+    'crypto','stocks','shares','trading','subscription','subscriptions','cancel','direct debit',
+    'hmrc','self assessment','salary','payslip','pension'
+  ],
+  health: [
+    'gym','exercise','workout','run','running','jog','jogging','walk','walking','swim','swimming',
+    'yoga','pilates','cycle','cycling','bike','sport','sports','football','tennis','class','pt',
+    'personal trainer','doctor','gp','dentist','appointment','medication','medicine','prescription',
+    'therapy','therapist','mental health','meditation','mindfulness','sleep','diet','nutrition',
+    'meal prep','vitamins','supplements','physio','physiotherapy','hospital','clinic','health','weight',
+    'calories','steps','water','hydrate','rest','recovery','sick','illness'
+  ],
+  relationships: [
+    'call','ring','phone','text','message','catch up','meet','visit','dinner','lunch','coffee',
+    'birthday','anniversary','wedding','party','event','social','friend','friends','family','mum',
+    'mom','dad','sister','brother','partner','date','dating','gift','present','card','thank you',
+    'thank','celebrate','celebration','children','kids','childcare','school','pick up','drop off',
+    'date night','plan','arrange'
+  ],
+};
+
+function classifyTask(name) {
+  const lower = name.toLowerCase();
+  const scores = {};
+  for (const [domain, keywords] of Object.entries(DOMAIN_KEYWORDS)) {
+    scores[domain] = 0;
+    for (const kw of keywords) {
+      if (lower.includes(kw)) scores[domain] += kw.split(' ').length; // multi-word keywords score higher
+    }
+  }
+  // Also check if task text contains words from goal titles
+  const goalBoosts = {};
+  state.goals.forEach(g => {
+    const words = g.title.toLowerCase().split(/\s+/).filter(w => w.length > 3);
+    words.forEach(w => { if (lower.includes(w)) goalBoosts[g.domain] = (goalBoosts[g.domain]||0) + 2; });
+  });
+  for (const [domain, boost] of Object.entries(goalBoosts)) scores[domain] = (scores[domain]||0) + boost;
+
+  const best = Object.entries(scores).sort((a,b)=>b[1]-a[1])[0];
+  return best && best[1] > 0 ? best[0] : 'admin';
+}
+
 function addTask() {
   const name = document.getElementById('newTaskInput').value.trim();
   if (!name) return;
-  const domain  = document.getElementById('newTaskDomain').value;
+  let domain = document.getElementById('newTaskDomain').value;
   const estMins = parseInt(document.getElementById('newTaskTime').value)||30;
-  state.tasks.push({ id:uid(), name, domain, done:false, priority:'med', goalId:null, date:todayStr(), estMins });
+  let autoClassified = false;
+
+  if (domain === 'auto') {
+    domain = classifyTask(name);
+    autoClassified = true;
+  }
+
+  state.tasks.push({
+    id: uid(), name, domain, done: false, priority: 'med',
+    goalId: null, date: todayStr(), estMins,
+    autoClassified, // flag to show badge
+  });
   document.getElementById('newTaskInput').value = '';
   save(); renderTasks(); resetQuiz();
-  showToast('Task added.');
+
+  const emoji = DOMAIN_EMOJI[domain] || '📋';
+  showToast(autoClassified
+    ? `Task added → ${emoji} ${domain.charAt(0).toUpperCase()+domain.slice(1)}`
+    : 'Task added.');
   checkBadges();
 }
 
@@ -1285,7 +1413,9 @@ function saveTaskEdit() {
   const id = document.getElementById('taskEditId').value;
   const t  = state.tasks.find(t=>t.id===id);
   t.name    = document.getElementById('taskEditName').value.trim()||t.name;
-  t.domain  = document.getElementById('taskEditDomain').value;
+  const newDomain = document.getElementById('taskEditDomain').value;
+  if (newDomain !== t.domain) t.autoClassified = false; // user overrode it
+  t.domain  = newDomain;
   t.estMins = parseInt(document.getElementById('taskEditTime').value)||30;
   t.goalId  = document.getElementById('taskEditGoal').value||null;
   save(); closeModal('taskModal'); renderTasks(); renderGoals();
@@ -1336,6 +1466,7 @@ function renderTasks() {
     }
     container.innerHTML=dt.map(t=>{
       const goalLink=t.goalId?state.goals.find(g=>g.id===t.goalId):null;
+      const rolledOver = t.rolledFrom && t.rolledFrom < todayStr();
       return `<div class="task-card ${t.domain}${t.done?' done':''}">
         <div class="task-check" onclick="toggleTask('${t.id}')">${t.done?'✓':''}</div>
         <div class="task-card-body">
@@ -1343,6 +1474,8 @@ function renderTasks() {
           <div class="task-card-meta">
             <span class="task-priority prio-${t.priority}">${t.priority}</span>
             <span class="time-badge">⏱ ${fmtMins(t.estMins||30)}</span>
+            ${rolledOver?`<span class="task-rollover-badge">↩ rolled over</span>`:''}
+            ${t.autoClassified?`<span class="task-auto-badge" onclick="openTaskEdit('${t.id}')" title="Auto-assigned — tap to change">🤖 auto</span>`:''}
             ${goalLink?`<span class="task-goal-link">→ ${esc(goalLink.title)}</span>`:''}
           </div>
         </div>
@@ -1427,7 +1560,110 @@ function buildPairs(tasks) {
   return pairs.slice(0,Math.min(pairs.length,12));
 }
 
+function renderCoachingPanel() {
+  const el = document.getElementById('coaching-panel-area');
+  if (!el) return;
+  const today = todayStr();
+  const undone = todayTasks().filter(t => !t.done);
+  const freeTimeMins = (state.freeTimeMins||{})[today]||0;
+  const insights = [];
+
+  // 1. Urgent goal deadlines
+  const urgentGoals = state.goals
+    .map(g => ({ ...g, du: daysUntil(g.endDate) }))
+    .filter(g => g.du !== null && g.du >= 0 && g.du <= 14)
+    .sort((a,b) => a.du - b.du);
+
+  urgentGoals.forEach(g => {
+    const linkedUndone = undone.filter(t => t.goalId === g.id);
+    const emoji = g.du <= 3 ? '🚨' : g.du <= 7 ? '⚠️' : '📅';
+    if (linkedUndone.length > 0) {
+      insights.push({
+        icon: emoji,
+        text: `<strong>${esc(g.title)}</strong> is due in <em>${g.du === 0 ? 'today!' : g.du + ' days'}</em> — you have ${linkedUndone.length} linked task${linkedUndone.length>1?'s':''} still to do. Prioritise these first.`
+      });
+    } else {
+      insights.push({
+        icon: emoji,
+        text: `<strong>${esc(g.title)}</strong> deadline in <em>${g.du === 0 ? 'today!' : g.du + ' days'}</em> — no tasks linked yet. Consider adding some in Today.`
+      });
+    }
+  });
+
+  // 2. Goals where time elapsed > task completion (falling behind)
+  state.goals.forEach(g => {
+    if (!g.startDate || !g.endDate) return;
+    const du = daysUntil(g.endDate);
+    if (du === null || du < 0 || du > 60) return;
+    const total = Math.round((new Date(g.endDate+'T12:00:00') - new Date(g.startDate+'T12:00:00'))/(1000*60*60*24));
+    const elapsed = Math.round((new Date() - new Date(g.startDate+'T12:00:00'))/(1000*60*60*24));
+    const timePct = total > 0 ? Math.min(100, Math.round(elapsed/total*100)) : 0;
+    const linked = state.tasks.filter(t => t.goalId === g.id);
+    const taskPct = linked.length ? Math.round(linked.filter(t=>t.done).length/linked.length*100) : 0;
+    if (timePct > taskPct + 20 && linked.length > 0) {
+      insights.push({
+        icon: '📉',
+        text: `You're <em>${timePct - taskPct}% behind</em> on <strong>${esc(g.title)}</strong> — ${timePct}% of time has passed but only ${taskPct}% of tasks done. Focus here today.`
+      });
+    }
+  });
+
+  // 3. Time vs task count reality check
+  if (freeTimeMins > 0 && undone.length > 0) {
+    const totalNeeded = undone.reduce((s,t) => s+(t.estMins||30), 0);
+    if (totalNeeded > freeTimeMins * 1.5) {
+      const fits = undone.filter((_, i) => {
+        let cum = 0;
+        for (let j=0; j<=i; j++) cum += undone[j].estMins||30;
+        return cum <= freeTimeMins;
+      }).length;
+      insights.push({
+        icon: '⏱',
+        text: `You have <em>${fmtMins(freeTimeMins)}</em> today but ${undone.length} tasks needing <em>${fmtMins(totalNeeded)}</em>. Realistically only <strong>${fits} task${fits!==1?'s':''}</strong> will fit — use Focus Mode to pick the right ones.`
+      });
+    }
+  }
+
+  // 4. Rolled-over tasks piling up
+  const rolled = undone.filter(t => t.rolledFrom && t.rolledFrom < today);
+  if (rolled.length >= 3) {
+    insights.push({
+      icon: '↩️',
+      text: `<strong>${rolled.length} tasks</strong> have rolled over from previous days. Consider whether they're still relevant — or delete the ones that no longer matter.`
+    });
+  }
+
+  // 5. No goal links
+  const unlinked = undone.filter(t => !t.goalId);
+  if (unlinked.length > 0 && state.goals.length > 0 && unlinked.length >= undone.length * 0.7) {
+    insights.push({
+      icon: '🔗',
+      text: `<strong>${unlinked.length} of your tasks</strong> aren't linked to any goal. Link them in Today → ✏️ edit to help prioritisation, or focus on the goal-linked ones first.`
+    });
+  }
+
+  // 6. Positive — on track
+  if (insights.length === 0 && state.goals.length > 0) {
+    insights.push({
+      icon: '✅',
+      text: `You're <strong>on track</strong> with your goals — no urgent deadlines or pace issues detected. Use the priority quiz below to order today's tasks.`
+    });
+  }
+
+  if (insights.length === 0) { el.innerHTML = ''; return; }
+
+  el.innerHTML = `<div class="coaching-panel">
+    <div class="coaching-panel-title">🧭 Goal-based coaching</div>
+    <div class="coaching-panel-sub">Based on your goals, deadlines and available time</div>
+    ${insights.map(i => `<div class="coaching-insight">
+      <div class="coaching-insight-icon">${i.icon}</div>
+      <div class="coaching-insight-text">${i.text}</div>
+    </div>`).join('')}
+  </div>`;
+}
+
 function renderQuiz() {
+  renderCoachingPanel();
   const area=document.getElementById('quiz-area');
   const undone=todayTasks().filter(t=>!t.done);
   if(undone.length===0){ area.innerHTML=`<div class="empty-state"><p>No tasks yet — add some in <strong>Today</strong> first.</p></div>`; return; }
@@ -1975,6 +2211,9 @@ async function bootApp() {
   const loadingEl = document.getElementById('loading-screen');
   if (loadingEl) loadingEl.classList.remove('hidden');
 
+  // Roll over any undone tasks from previous days
+  rolloverTasks();
+
   // First render from localStorage so UI isn't blank
   renderGoals();
   renderTasks();
@@ -1987,6 +2226,7 @@ async function bootApp() {
   if (ok) {
     setSyncStatus('synced', 'Synced ✓');
     setTimeout(() => setSyncStatus('', 'Synced'), 3000);
+    rolloverTasks();
     renderGoals();
     renderTasks();
     checkBadges();
